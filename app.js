@@ -5,12 +5,13 @@ const session = require("express-session");
 const dotenv = require("dotenv");
 const path = require("path");
 const nunjucks = require("nunjucks");
-
+const cors = require("cors");
 dotenv.config();
 const indexRouter = require("./routes");
+const exhibitRouter = require("./routes/exhibits");
 
 const app = express();
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3001);
 app.set("view engine", "html");
 nunjucks.configure("views", {
   express: app,
@@ -34,8 +35,9 @@ app.use(
     name: "session-cookie",
   })
 );
-
-app.use("/", indexRouter);
+app.use(cors({ origin: "http://localhost:3000" }));
+// app.use("/", indexRouter);
+app.use("/exhibits", exhibitRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
