@@ -9,6 +9,9 @@ const cors = require("cors");
 dotenv.config();
 // const indexRouter = require("./routes");
 const exhibitRouter = require("./routes/exhibits");
+const adminRouter = require("./routes/api/admin/exhibitions");
+const exhibitionRouter = require("./routes/api/exhibitions");
+const venueRouter = require("./routes/api/venues");
 const { sequelize } = require("./models");
 
 const app = express();
@@ -39,7 +42,9 @@ app.use(
 app.use(cors({ origin: "http://localhost:3000" }));
 // app.use("/", indexRouter);
 app.use("/exhibits", exhibitRouter);
-
+app.use("/api/admin/exhibitions", adminRouter);
+app.use("/api/exhibitions", exhibitionRouter);
+app.use("/api/venues", venueRouter);
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;
@@ -47,7 +52,7 @@ app.use((req, res, next) => {
 });
 
 sequelize
-  .sync({ force: false, alter: true })
+  .sync({ force: false })
   .then(() => {
     console.log("데이터베이스 연결 성공");
   })
