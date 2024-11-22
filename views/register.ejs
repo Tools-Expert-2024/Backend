@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="/css/styles.css">
+
+<%-include('header.ejs')%>
+
+  <h2>회원가입</h2>
+  <form action="registerProc" method="post" style="display: flex; margin-left: 10px;">
+
+    <div style="display: flex; flex-direction: column; margin-right: 10px;">
+      <div class="category">
+        <label for="reg_id" style="width: 80px;">ID </label>
+        <input type="text" id=reg_id" name="reg_id" required style=" padding: 5px;" required>
+      </div>
+      <div class="category">
+        <label for="reg_pw" style="width: 80px;">Password </label>
+        <input type="password" id="reg_pw" name="reg_pw" required style=" padding: 5px;" required>
+      </div>
+      <div class="category">
+        <label for="reg_name" style="width: 80px;">이름 </label>
+        <input type="text" id="reg_name" name="reg_name" required style=" padding: 5px;" required>
+      </div>
+      <div class="category">
+        <label for="reg_phone" style="width: 80px;">연락처 </label>
+        <input type="text" id="reg_phone" name="reg_phone" required style=" padding: 5px;" required>
+      </div>
+      <div class="category">
+        <label for="reg_email" style="width: 80px;">이메일 </label>
+        <input type="text" id="reg_email" name="reg_email" required style=" padding: 5px;" required>
+        <button type=" submit" style=" padding: 5px; margin-left: 15px;">회원가입</button>
+      </div>
+    </div>
+
+
+
+
+  </form>
+
+  </body>
+
+  </html>

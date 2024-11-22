@@ -1,0 +1,40 @@
+<link rel="stylesheet" href="/css/styles.css">
+
+
+<%-include('header.ejs')%>
+  <h2>프로필</h2>
+  <div style="display: flex; flex-direction: column; margin-right: 10px;">
+    <div class="category">
+      <label for="user_id">ID :</label>
+      <span>
+        <%= user_id %>
+      </span>
+    </div>
+    <div class="category">
+      <label for="user_pw">Password :</label>
+      <span>
+        <%= user_pw %>
+      </span>
+    </div>
+    <div class="category">
+      <label for="user_name">이름 :</label>
+      <span>
+        <%= user_name %>
+      </span>
+    </div>
+    <div class="category">
+      <label for="user_phone">연락처 :</label>
+      <span>
+        <%= user_phone %>
+      </span>
+    </div>
+    <div class="category">
+      <label for="user_email">이메일 :</label>
+      <span>
+        <%= user_email %>
+      </span>
+    </div>
+  </div>
+  </body>
+
+  </html>

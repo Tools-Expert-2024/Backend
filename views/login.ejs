@@ -1,0 +1,26 @@
+<%-include('header.ejs')%>
+
+  <h2>로그인</h2>
+  <form action="/loginProc" method="post" style="display: flex; align-items: stretch; margin-left: 10px;">
+
+    <!-- 왼쪽 입력 필드 블록 -->
+    <div style="display: flex; flex-direction: column; margin-right: 10px;">
+      <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <label for="user_id" style="width: 80px; font-weight: bold;">ID </label>
+        <input type="text" id="user_id" name="user_id" required style=" padding: 5px; margin-left: 25px;">
+      </div>
+      <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <label for="user_pw" style="width: 80px; font-weight: bold;">Password </label>
+        <input type="password" id="user_pw" name="user_pw" required style=" padding: 5px; margin-left: 25px;">
+      </div>
+    </div>
+
+    <!-- 오른쪽 로그인 버튼 블록 -->
+    <div style="display: flex; align-items: stretch;">
+      <button type="submit" style="height: 88%; line-height: 25px; padding: 0 10px; font-size: 14px;">로그인</button>
+    </div>
+  </form>
+  </form>
+  </body>
+
+  </html>
