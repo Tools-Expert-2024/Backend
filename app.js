@@ -7,7 +7,7 @@ const path = require("path");
 const nunjucks = require("nunjucks");
 const cors = require("cors");
 dotenv.config();
-const indexRouter = require("./routes");
+// const indexRouter = require("./routes");
 const exhibitRouter = require("./routes/exhibits");
 const { sequelize } = require("./models");
 
@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 });
 
 sequelize
-  .sync({ force: false })
+  .sync({ force: false, alter: true })
   .then(() => {
     console.log("데이터베이스 연결 성공");
   })

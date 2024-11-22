@@ -9,20 +9,16 @@ class Exhibition extends Sequelize.Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        seq: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-        },
         title: {
           type: Sequelize.STRING(255),
           allowNull: false,
         },
         start_date: {
-          type: Sequelize.DATE,
+          type: Sequelize.STRING(8), // Changed to string to store yyyymmdd format
           allowNull: false,
         },
         end_date: {
-          type: Sequelize.DATE,
+          type: Sequelize.STRING(8), // Changed to string to store yyyymmdd format
           allowNull: false,
         },
         area: {
@@ -60,10 +56,10 @@ class Exhibition extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Exhibition.belongsTo(db.ExhibitionDetail, {
-      foreignKey: "seq",
-      targetKey: "seq",
-    });
+    // db.Exhibition.belongsTo(db.ExhibitionDetail, {
+    //   foreignKey: "seq",
+    //   targetKey: "seq",
+    // });
     db.Exhibition.hasMany(db.Like, {
       foreignKey: "exhibition_id",
       sourceKey: "id",

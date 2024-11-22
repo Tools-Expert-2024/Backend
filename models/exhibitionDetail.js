@@ -17,6 +17,14 @@ class ExhibitionDetail extends Sequelize.Model {
           type: Sequelize.STRING(255),
           allowNull: false,
         },
+        startDate: {
+          type: Sequelize.STRING(8),
+          allowNull: false,
+        },
+        endDate: {
+          type: Sequelize.STRING(8),
+          allowNull: false,
+        },
         contents1: {
           type: Sequelize.TEXT,
           allowNull: true,

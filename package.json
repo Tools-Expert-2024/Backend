@@ -16,6 +16,7 @@
     "fast-xml-parser": "^4.5.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.11.4",
+    "node-cron": "^3.0.3",
     "nunjucks": "^3.2.4",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2"
