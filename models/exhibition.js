@@ -35,11 +35,11 @@ class Exhibition extends Sequelize.Model {
         },
         gpsX: {
           type: Sequelize.DECIMAL(10, 7),
-          allowNull: false,
+          allowNull: true,
         },
         gpsY: {
           type: Sequelize.DECIMAL(10, 7),
-          allowNull: false,
+          allowNull: true,
         },
       },
       {
@@ -56,10 +56,6 @@ class Exhibition extends Sequelize.Model {
   }
 
   static associate(db) {
-    // db.Exhibition.belongsTo(db.ExhibitionDetail, {
-    //   foreignKey: "seq",
-    //   targetKey: "seq",
-    // });
     db.Exhibition.hasMany(db.Like, {
       foreignKey: "exhibition_id",
       sourceKey: "id",

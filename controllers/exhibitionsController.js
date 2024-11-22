@@ -3,42 +3,14 @@ const { Exhibition, ExhibitionDetail, Venue } = require("../models");
 const cron = require("node-cron");
 const { Op } = require("sequelize");
 const { getExhibitions } = require("../lib/getExhibitions");
+const { getExhibitionDetail } = require("../lib/getExhibitionDetails");
 // 공공 API에서 데이터를 가져와 로컬 데이터베이스에 저장
 const fetchAndSaveExhibitions = async () => {
   try {
-    const response = await getExhibitions(20240901, 20240919, 1, 10, "D000");
+    const response = await getExhibitions(20241110, 20241122, 1);
     const exhibitions = response; // 실제 데이터 구조에 맞게 변경하세요
-    console.log(exhibitions);
+
     for (const exhibition of exhibitions) {
-      // 전시회장 정보 저장
-      //   const [venue, created] = await Venue.findOrCreate({
-      //     where: { place_seq: exhibition.place_seq },
-      //     defaults: {
-      //       name: exhibition.place,
-      //       place_url: exhibition.place_url,
-      //       location: exhibition.place_addr,
-      //       gps_x: exhibition.gpsX,
-      //       gps_y: exhibition.gpsY,
-      //       area: exhibition.area,
-      //     },
-      //   });
-
-      // 전시회 상세 정보 저장
-      //   const [exhibitionDetail, detailCreated] =
-      //     await ExhibitionDetail.findOrCreate({
-      //       where: { seq: exhibition.seq },
-      //       defaults: {
-      //         title: exhibition.title,
-      //         price: exhibition.price,
-      //         contents1: exhibition.contents1,
-      //         contents2: exhibition.contents2,
-      //         url: exhibition.url,
-      //         img_url: exhibition.img_url,
-      //         phone: exhibition.phone,
-      //         place_seq: venue.place_seq,
-      //       },
-      //     });
-
       // 전시회 정보 저장
       await Exhibition.findOrCreate({
         where: { id: exhibition.seq },
@@ -49,10 +21,48 @@ const fetchAndSaveExhibitions = async () => {
           area: exhibition.area,
           place: exhibition.place,
           thumbnail: exhibition.thumbnail,
-          gpsX: exhibition.gpsX,
-          gpsY: exhibition.gpsY,
+          gpsX: exhibition.gpsX == "" ? null : exhibition.gpsX,
+          gpsY: exhibition.gpsY == "" ? null : exhibition.gpsY,
         },
       });
+      const exhibitionDetail = await ExhibitionDetail.findOne({
+        where: { seq: exhibition.seq },
+      });
+
+      if (!exhibitionDetail) {
+        const data = await getExhibitionDetail(exhibition.seq);
+        console.log(data);
+        // 전시회장 정보 저장
+        const [venue, created] = await Venue.findOrCreate({
+          where: { place_seq: data.placeSeq },
+          defaults: {
+            name: data.place,
+            place_url: data.placeUrl,
+            place_addr: data.placeAddr,
+            area: data.area,
+            gpsX: data.gpsX == "" ? null : data.gpsX,
+            gpsY: data.gpsY == "" ? null : data.gpsY,
+            area: data.area,
+          },
+        });
+
+        //   전시회 상세 정보 저장
+        const [exhibitionDetail, detailCreated] =
+          await ExhibitionDetail.findOrCreate({
+            where: { seq: data.seq },
+            defaults: {
+              title: data.title,
+              price: data.price,
+              startDate: data.startDate,
+              endDate: data.endDate,
+              contents1: data.contents1,
+              contents2: data.contents2,
+              thumbnail: data.imgUrl,
+              phone: data.phone,
+              place_seq: venue.place_seq,
+            },
+          });
+      }
     }
 
     console.log("Exhibitions fetched and saved successfully");
@@ -62,7 +72,7 @@ const fetchAndSaveExhibitions = async () => {
 };
 
 // 매일 자정에 데이터 동기화 작업 실행
-cron.schedule("* * * * *", fetchAndSaveExhibitions);
+cron.schedule("0 0 * * *", fetchAndSaveExhibitions);
 
 module.exports = {
   fetchAndSaveExhibitions,

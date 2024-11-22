@@ -13,6 +13,10 @@ class Venue extends Sequelize.Model {
           type: Sequelize.STRING(255),
           allowNull: false,
         },
+        area: {
+          type: Sequelize.STRING(255),
+          allowNull: false,
+        },
         place_url: {
           type: Sequelize.STRING(255),
           allowNull: false,
@@ -22,17 +26,17 @@ class Venue extends Sequelize.Model {
           unique: true,
           allowNull: false,
         },
-        location: {
+        place_addr: {
           type: Sequelize.STRING(255),
           allowNull: false,
         },
         gps_x: {
           type: Sequelize.DECIMAL(10, 7),
-          allowNull: false,
+          allowNull: true,
         },
         gps_y: {
           type: Sequelize.DECIMAL(10, 7),
-          allowNull: false,
+          allowNull: true,
         },
       },
       {

@@ -33,11 +33,7 @@ class ExhibitionDetail extends Sequelize.Model {
           type: Sequelize.TEXT,
           allowNull: true,
         },
-        url: {
-          type: Sequelize.STRING(255),
-          allowNull: true,
-        },
-        img_url: {
+        thumbnail: {
           type: Sequelize.STRING(255),
           allowNull: true,
         },
@@ -64,6 +60,10 @@ class ExhibitionDetail extends Sequelize.Model {
   }
 
   static associate(db) {
+    db.ExhibitionDetail.belongsTo(db.Exhibition, {
+      foreignKey: "seq",
+      targetKey: "id",
+    });
     db.ExhibitionDetail.belongsTo(db.Venue, {
       foreignKey: "place_seq",
       targetKey: "place_seq",
