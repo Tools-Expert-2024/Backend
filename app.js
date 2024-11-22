@@ -1,4 +1,3 @@
-
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -8,20 +7,20 @@ const path = require("path");
 const nunjucks = require("nunjucks");
 const cors = require("cors");
 dotenv.config();
-// const indexRouter = require("./routes");
-const bodyParser = require('body-parser');
-const authRoutes = require('./middlewares/auth');
 const registerRoutes = require('./middlewares/register');
-const exhibitRouter = require("./routes/exhibits");
-const adminRouter = require("./routes//admin/exhibitions");
+const adminRouter = require("./routes/api/admin/exhibitions");
 const exhibitionRouter = require("./routes/api/exhibitions");
 const venueRouter = require("./routes/api/venues");
 const { sequelize } = require("./models");
+const loginRouter = require("./middlewares/login");
+const logoutRourter = require("./middlewares/logout");
+const findRouter = require("./middlewares/find_my_id");
+const registerRouter = require("./middlewares/register");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 세션 
+// 세션 설정
 app.use(session({
   secret: 'kimt919',
   resave: true,
@@ -29,7 +28,8 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 }
 }));
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // 정적 파일 및 뷰 엔진 설정
 app.set('view engine', 'ejs');
@@ -54,33 +54,47 @@ app.use(
   })
 );
 app.use(cors({ origin: "http://localhost:3000" }));
-// app.use("/", indexRouter);
-app.use("/exhibits", exhibitRouter);
 app.use("/api/admin/exhibitions", adminRouter);
 app.use("/api/exhibitions", exhibitionRouter);
 app.use("/api/venues", venueRouter);
 app.use((req, res, next) => {
   res.locals.id = '';
-  res.locals.pw = '';
+  res.locals.password = '';
   res.locals.name = '';
   res.locals.user_name = '';
   res.locals.phone = '';
   res.locals.email = '';
   res.locals.is_admin = '0';
 
-  if (req.session.member) {
-    res.locals.id = req.session.member.id;
-    res.locals.name = req.session.member.name;
-    res.locals.user_name = req.session.member.user_name;
-    res.locals.pw = req.session.member.pw;
-    res.locals.phone = req.session.member.phone;
-    res.locals.email = req.session.member.email;
-    res.locals.is_admin = req.session.member.is_admin;
+  if (req.session.user) {
+    res.locals.id = req.session.user.id;
+    res.locals.password = req.session.user.password;
+    res.locals.name = req.session.user.name;
+    res.locals.user_name = req.session.user.user_name;
+    res.locals.phone = req.session.user.phone;
+    res.locals.email = req.session.user.email;
+    res.locals.is_admin = req.session.user.is_admin;
   }
   next();
 });
-app.use('/middlewares/auth', authRoutes);       // 로그인/로그아웃
+
 app.use('/middlewares/register', registerRoutes); // 회원가입
+
+// Sequelize 연결
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("데이터베이스 연결 성공");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+// 라우트 등록
+app.use('/login', loginRouter);
+app.use('/logout', logoutRourter);       // 로그인/로그아웃
+app.use("/register", registerRouter);
+app.use("/find_my_id", findRouter);
 
 // 페이지 라우트
 app.get('/', (req, res) => res.render('index'));
@@ -100,9 +114,21 @@ app.get('/profile', (req, res) => {
     .catch((err) => {
       console.log(err);
     });
-}
+});
 
-  app.use((err, req, res, next) => {
+app.use((err, req, res, next) => {
+  app.get('/find_my_id', (req, res) => res.render('find_my_id'));
+  app.get('/register', (req, res) => res.render('register'));
+  app.get('/profile', (req, res) => {
+    if (!req.session.user) {
+      return res.send('<script>alert("로그인 후 이용 가능"); location.href="/login";</script>');
+    }
+    res.render('profile');
+  });
+});
+
+// 오류 처리 미들웨어
+app.use((err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
   res.status(err.status || 500);

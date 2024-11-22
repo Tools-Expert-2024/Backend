@@ -4,15 +4,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ExpressEx1</title>
-  <h1>ExpressEx1</h1>
+  <title>d</title>
+  <h1>d</h1>
 </head>
 
 <body>
+
   <header style="margin: 10px">
     <nav>
       <a href="/">홈</a> |
-      <% if (user_name) { %>
+      <% if (id) { %>
         <a href="/profile">프로필</a> |
 
         <a href="/logout">로그아웃</a> | <% if (is_admin==1) { %>admin <% } %>
@@ -21,6 +22,7 @@
             </span>
             <% } else { %>
               <a href="/login">로그인</a> |
+              <a href="/find_my_id">ID/PW 찾기</a> |
               <a href="/register">회원가입</a>
 
               <% } %>

@@ -1,26 +1,29 @@
-<%-include('header.ejs')%>
+<!DOCTYPE html>
+<html lang="ko">
 
-  <h2>로그인</h2>
-  <form action="/loginProc" method="post" style="display: flex; align-items: stretch; margin-left: 10px;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인</title>
+</head>
 
-    <!-- 왼쪽 입력 필드 블록 -->
-    <div style="display: flex; flex-direction: column; margin-right: 10px;">
-      <div style="display: flex; align-items: center; margin-bottom: 10px;">
-        <label for="user_id" style="width: 80px; font-weight: bold;">ID </label>
-        <input type="text" id="user_id" name="user_id" required style=" padding: 5px; margin-left: 25px;">
-      </div>
-      <div style="display: flex; align-items: center; margin-bottom: 10px;">
-        <label for="user_pw" style="width: 80px; font-weight: bold;">Password </label>
-        <input type="password" id="user_pw" name="user_pw" required style=" padding: 5px; margin-left: 25px;">
-      </div>
+<body>
+  <%- include('header.ejs') %>
+
+    <div class="container">
+      <h2>로그인</h2>
+      <form action="/login" method="post" class="form-container">
+        <div class="form-group">
+          <label for="id">ID</label>
+          <input type="text" id="id" name="id" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn-submit">로그인</button>
+      </form>
     </div>
+</body>
 
-    <!-- 오른쪽 로그인 버튼 블록 -->
-    <div style="display: flex; align-items: stretch;">
-      <button type="submit" style="height: 88%; line-height: 25px; padding: 0 10px; font-size: 14px;">로그인</button>
-    </div>
-  </form>
-  </form>
-  </body>
-
-  </html>
+</html>
