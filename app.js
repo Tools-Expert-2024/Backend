@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -8,18 +8,15 @@ const path = require("path");
 const nunjucks = require("nunjucks");
 const cors = require("cors");
 dotenv.config();
-const indexRouter = require("./routes");
-const exhibitRouter = require("./routes/exhibits");
-const { sequelize } = require("./models");
-=======
-const express = require('express');
-const session = require('express-session');
+// const indexRouter = require("./routes");
 const bodyParser = require('body-parser');
 const authRoutes = require('./middlewares/auth');
 const registerRoutes = require('./middlewares/register');
-
-require('dotenv').config();
->>>>>>> Stashed changes
+const exhibitRouter = require("./routes/exhibits");
+const adminRouter = require("./routes//admin/exhibitions");
+const exhibitionRouter = require("./routes/api/exhibitions");
+const venueRouter = require("./routes/api/venues");
+const { sequelize } = require("./models");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +36,29 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 
 // 전역 변수 설정
+app.use(morgan("dev"));
+app.use("/", express.static(path.join(__dirname, "public")));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+    },
+    name: "session-cookie",
+  })
+);
+app.use(cors({ origin: "http://localhost:3000" }));
+// app.use("/", indexRouter);
+app.use("/exhibits", exhibitRouter);
+app.use("/api/admin/exhibitions", adminRouter);
+app.use("/api/exhibitions", exhibitionRouter);
+app.use("/api/venues", venueRouter);
 app.use((req, res, next) => {
   res.locals.id = '';
   res.locals.pw = '';
@@ -59,24 +79,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-<<<<<<< Updated upstream
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log("데이터베이스 연결 성공");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-app.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
-  res.status(err.status || 500);
-  res.render("error");
-=======
-// 라우트 등록
 app.use('/middlewares/auth', authRoutes);       // 로그인/로그아웃
 app.use('/middlewares/register', registerRoutes); // 회원가입
 
@@ -89,7 +91,23 @@ app.get('/profile', (req, res) => {
     return res.send('<script>alert("로그인 후 이용 가능"); location.href="/login";</script>');
   }
   res.render('profile');
->>>>>>> Stashed changes
+
+  sequelize
+    .sync({ force: false })
+    .then(() => {
+      console.log("데이터베이스 연결 성공");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+  app.use((err, req, res, next) => {
+  res.locals.message = err.message;
+  res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
+  res.status(err.status || 500);
+  res.render("error");
+
 });
 
 // 서버 실행
