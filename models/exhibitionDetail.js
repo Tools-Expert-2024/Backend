@@ -1,49 +1,66 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
-const Venue = require("./venue");
+const Sequelize = require("sequelize");
 
-const ExhibitionDetail = sequelize.define("ExhibitionDetail", {
-  seq: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  price: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  contents1: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  contents2: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  url: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  img_url: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  phone: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  place_seq: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Venue,
-      key: "place_seq",
-    },
-    allowNull: false,
-  },
-});
+class ExhibitionDetail extends Sequelize.Model {
+  static initiate(sequelize) {
+    ExhibitionDetail.init(
+      {
+        seq: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
+        title: {
+          type: Sequelize.STRING(255),
+          allowNull: false,
+        },
+        price: {
+          type: Sequelize.STRING(255),
+          allowNull: false,
+        },
+        contents1: {
+          type: Sequelize.TEXT,
+          allowNull: true,
+        },
+        contents2: {
+          type: Sequelize.TEXT,
+          allowNull: true,
+        },
+        url: {
+          type: Sequelize.STRING(255),
+          allowNull: true,
+        },
+        img_url: {
+          type: Sequelize.STRING(255),
+          allowNull: true,
+        },
+        phone: {
+          type: Sequelize.STRING(255),
+          allowNull: true,
+        },
+        place_seq: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        },
+      },
+      {
+        sequelize,
+        timestamps: false,
+        underscored: false,
+        modelName: "ExhibitionDetail",
+        tableName: "exhibition_details",
+        paranoid: false,
+        charset: "utf8",
+        collate: "utf8_general_ci",
+      }
+    );
+  }
+
+  static associate(db) {
+    db.ExhibitionDetail.belongsTo(db.Venue, {
+      foreignKey: "place_seq",
+      targetKey: "place_seq",
+    });
+  }
+}
 
 module.exports = ExhibitionDetail;

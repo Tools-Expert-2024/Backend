@@ -9,6 +9,7 @@ const cors = require("cors");
 dotenv.config();
 const indexRouter = require("./routes");
 const exhibitRouter = require("./routes/exhibits");
+const { sequelize } = require("./models");
 
 const app = express();
 app.set("port", process.env.PORT || 3001);
@@ -44,6 +45,15 @@ app.use((req, res, next) => {
   error.status = 404;
   next(error);
 });
+
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("데이터베이스 연결 성공");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
