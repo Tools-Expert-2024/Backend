@@ -64,7 +64,7 @@ app.use(
     name: "session-cookie",
   })
 );
-app.use(cors({ origin: "http://localhost:3001" }));
+app.use(cors({ origin: "http://localhost:3000" }));
 app.use("/api/admin/exhibitions", adminRouter);
 /**
  * @swagger
