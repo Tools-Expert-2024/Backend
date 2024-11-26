@@ -66,10 +66,10 @@ router.get("/", (req, res) => {
       [Op.or]: [
         {
           start_date: {
-            [Op.gte]: endDate,
+            [Op.gte]: startDate,
           },
           end_date: {
-            [Op.lte]: startDate,
+            [Op.lte]: endDate,
           },
         },
         {
