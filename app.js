@@ -20,7 +20,7 @@ const registerRouter = require("./middlewares/register");
 const { fetchAndSaveExhibitions } = require("./config/cron");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // 매일 자정에 데이터 동기화 작업 실행
 cron.schedule("0 0 * * *", fetchAndSaveExhibitions);
@@ -37,6 +37,10 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+const { swaggerUi, specs } = require("./swagger/swagger");
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 정적 파일 및 뷰 엔진 설정
 app.set("view engine", "ejs");
@@ -60,8 +64,14 @@ app.use(
     name: "session-cookie",
   })
 );
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: "http://localhost:3001" }));
 app.use("/api/admin/exhibitions", adminRouter);
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: 유저 추가 수정 삭제 조회
+ */
 app.use("/api/exhibitions", exhibitionRouter);
 app.use("/api/venues", venueRouter);
 app.use((req, res, next) => {
