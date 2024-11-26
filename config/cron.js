@@ -6,11 +6,13 @@ const {
 } = require("../lib/getExternalAPIExhibitions");
 const { getExhibitionDetail } = require("../lib/getExhibitionDetails");
 // 공공 API에서 데이터를 가져와 로컬 데이터베이스에 저장
-const fetchAndSaveExhibitions = async () => {
+const fetchAndSaveExhibitions = async (startDate, endDate) => {
   try {
-    const today = new Date();
-    const startDate = today.toISOString().split("T")[0].replace(/-/g, "");
-    const endDate = startDate; // Assuming you want to fetch exhibitions for today only
+    if (!startDate || !endDate) {
+      const today = new Date();
+      startDate = today.toISOString().split("T")[0].replace(/-/g, "");
+      endDate = startDate; // Assuming you want to fetch exhibitions for today only
+    }
     const response = await getExternalAPIExhibitions(startDate, endDate, 1);
     const exhibitions = response; // 실제 데이터 구조에 맞게 변경하세요
 

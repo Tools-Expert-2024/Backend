@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const {
   getExternalAPIExhibitions,
 } = require("../../../lib/getExternalAPIExhibitions");
+const { fetchAndSaveExhibitions } = require("../../../config/cron");
 // - `GET /api/exhibitions`: 전시회 리스트
 // - `GET /api/exhibitions/search`: 전시회 검색
 // - `GET /api/exhibitions/:id`: 전시회 상세 정보
@@ -54,10 +55,10 @@ router.get("/search", (req, res) => {
   res.send("전시회 검색");
 });
 
-router.get("/getExternal", (req, res) => {
+router.get("/", (req, res) => {
   startDate = req.body.startDate;
   endDate = req.body.endDate;
-  getExternalAPIExhibitions(startDate, endDate, 1)
+  fetchAndSaveExhibitions(startDate, endDate)
     .then((result) => {
       res.json(result);
     })
