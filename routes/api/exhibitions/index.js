@@ -20,13 +20,13 @@ const { fetchAndSaveExhibitions } = require("../../../config/cron");
  *      description: "시작일과 종료일을 기준으로 전시회 목록을 조회합니다."
  *      tags: [Exhibitions]
  *      parameters:
- *        - in: query
+ *        - in: path
  *          name: startDate
  *          schema:
  *            type: string
  *            format: date
  *          description: "해당 날짜 이후 시작하는 전시회를 조회합니다."
- *        - in: query
+ *        - in: path
  *          name: endDate
  *          schema:
  *            type: string
@@ -60,7 +60,7 @@ const { fetchAndSaveExhibitions } = require("../../../config/cron");
 
 router.get("/", (req, res) => {
   // 전시회 리스트
-  const { startDate, endDate } = req.body;
+  const { startDate, endDate } = req.params;
   sequelize.models.Exhibition.findAll({
     where: {
       [Op.or]: [
