@@ -6,8 +6,9 @@ const dotenv = require("dotenv");
 const path = require("path");
 const nunjucks = require("nunjucks");
 const cors = require("cors");
+const cron = require("node-cron");
 dotenv.config();
-const registerRoutes = require('./middlewares/register');
+const registerRoutes = require("./middlewares/register");
 const adminRouter = require("./routes/api/admin/exhibitions");
 const exhibitionRouter = require("./routes/api/exhibitions");
 const venueRouter = require("./routes/api/venues");
@@ -16,24 +17,30 @@ const loginRouter = require("./middlewares/login");
 const logoutRourter = require("./middlewares/logout");
 const findRouter = require("./middlewares/find_my_id");
 const registerRouter = require("./middlewares/register");
+const { fetchAndSaveExhibitions } = require("./config/cron");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 매일 자정에 데이터 동기화 작업 실행
+cron.schedule("0 0 * * *", fetchAndSaveExhibitions);
+
 // 세션 설정
-app.use(session({
-  secret: 'kimt919',
-  resave: true,
-  saveUninitialized: true,
-  cookie: { maxAge: 1000 * 60 * 60 }
-}));
+app.use(
+  session({
+    secret: "kimt919",
+    resave: true,
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 },
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // 정적 파일 및 뷰 엔진 설정
-app.set('view engine', 'ejs');
-app.set('views', './views');
+app.set("view engine", "ejs");
+app.set("views", "./views");
 
 // 전역 변수 설정
 app.use(morgan("dev"));
@@ -58,13 +65,13 @@ app.use("/api/admin/exhibitions", adminRouter);
 app.use("/api/exhibitions", exhibitionRouter);
 app.use("/api/venues", venueRouter);
 app.use((req, res, next) => {
-  res.locals.id = '';
-  res.locals.password = '';
-  res.locals.name = '';
-  res.locals.user_name = '';
-  res.locals.phone = '';
-  res.locals.email = '';
-  res.locals.is_admin = '0';
+  res.locals.id = "";
+  res.locals.password = "";
+  res.locals.name = "";
+  res.locals.user_name = "";
+  res.locals.phone = "";
+  res.locals.email = "";
+  res.locals.is_admin = "0";
 
   if (req.session.user) {
     res.locals.id = req.session.user.id;
@@ -77,8 +84,7 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-app.use('/middlewares/register', registerRoutes); // 회원가입
+app.use("/middlewares/register", registerRoutes); // 회원가입
 
 // Sequelize 연결
 sequelize
@@ -91,20 +97,22 @@ sequelize
   });
 
 // 라우트 등록
-app.use('/login', loginRouter);
-app.use('/logout', logoutRourter);       // 로그인/로그아웃
+app.use("/login", loginRouter);
+app.use("/logout", logoutRourter); // 로그인/로그아웃
 app.use("/register", registerRouter);
 app.use("/find_my_id", findRouter);
 
 // 페이지 라우트
-app.get('/', (req, res) => res.render('index'));
-app.get('/login', (req, res) => res.render('login'));
-app.get('/register', (req, res) => res.render('register'));
-app.get('/profile', (req, res) => {
+app.get("/", (req, res) => res.render("index"));
+app.get("/login", (req, res) => res.render("login"));
+app.get("/register", (req, res) => res.render("register"));
+app.get("/profile", (req, res) => {
   if (!req.session.member) {
-    return res.send('<script>alert("로그인 후 이용 가능"); location.href="/login";</script>');
+    return res.send(
+      '<script>alert("로그인 후 이용 가능"); location.href="/login";</script>'
+    );
   }
-  res.render('profile');
+  res.render("profile");
 
   sequelize
     .sync({ force: false })
@@ -117,13 +125,15 @@ app.get('/profile', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  app.get('/find_my_id', (req, res) => res.render('find_my_id'));
-  app.get('/register', (req, res) => res.render('register'));
-  app.get('/profile', (req, res) => {
+  app.get("/find_my_id", (req, res) => res.render("find_my_id"));
+  app.get("/register", (req, res) => res.render("register"));
+  app.get("/profile", (req, res) => {
     if (!req.session.user) {
-      return res.send('<script>alert("로그인 후 이용 가능"); location.href="/login";</script>');
+      return res.send(
+        '<script>alert("로그인 후 이용 가능"); location.href="/login";</script>'
+      );
     }
-    res.render('profile');
+    res.render("profile");
   });
 });
 
@@ -133,7 +143,6 @@ app.use((err, req, res, next) => {
   res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
   res.status(err.status || 500);
   res.render("error");
-
 });
 
 // 서버 실행

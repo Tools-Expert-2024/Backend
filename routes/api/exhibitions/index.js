@@ -2,6 +2,9 @@ const express = require("express");
 const { sequelize } = require("../../../models");
 const router = express.Router();
 const { Op } = require("sequelize");
+const {
+  getExternalAPIExhibitions,
+} = require("../../../lib/getExternalAPIExhibitions");
 // - `GET /api/exhibitions`: 전시회 리스트
 // - `GET /api/exhibitions/search`: 전시회 검색
 // - `GET /api/exhibitions/:id`: 전시회 상세 정보
@@ -49,6 +52,19 @@ router.get("/", (req, res) => {
 router.get("/search", (req, res) => {
   // 전시회 검색
   res.send("전시회 검색");
+});
+
+router.get("/getExternal", (req, res) => {
+  startDate = req.body.startDate;
+  endDate = req.body.endDate;
+  getExternalAPIExhibitions(startDate, endDate, 1)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    });
 });
 
 router.get("/:id", (req, res) => {
