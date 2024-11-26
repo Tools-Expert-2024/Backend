@@ -60,7 +60,7 @@ const { fetchAndSaveExhibitions } = require("../../../config/cron");
 
 router.get("/", (req, res) => {
   // 전시회 리스트
-  const { startDate, endDate } = req.params;
+  const { startDate, endDate } = req.query;
   sequelize.models.Exhibition.findAll({
     where: {
       [Op.or]: [
