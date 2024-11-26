@@ -55,7 +55,7 @@ router.get("/search", (req, res) => {
   res.send("전시회 검색");
 });
 
-router.get("/", (req, res) => {
+router.get("/external", (req, res) => {
   startDate = req.body.startDate;
   endDate = req.body.endDate;
   fetchAndSaveExhibitions(startDate, endDate)
