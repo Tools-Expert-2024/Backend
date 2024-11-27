@@ -1,51 +1,66 @@
 const Sequelize = require("sequelize");
 
-class User extends Sequelize.Model {
+class Users extends Sequelize.Model {
   static initiate(sequelize) {
-    User.init(
+    Users.init(
       {
-        id: {
+        idx: {
           type: Sequelize.INTEGER,
           primaryKey: true,
-          autoIncrement: true,
-        },
-        username: {
-          type: Sequelize.STRING(255),
           allowNull: false,
-          unique: true,
+          autoIncrement: true
+        },
+        id: {
+          type: Sequelize.STRING,
+          primaryKey: true,
+          allowNull: false
         },
         password: {
-          type: Sequelize.STRING(255),
-          allowNull: false,
+          type: Sequelize.STRING,
+          allowNull: false
+        },
+        name: {
+          type: Sequelize.STRING,
+          allowNull: false
+        },
+        user_name: {
+          type: Sequelize.STRING,
+          allowNull: false
         },
         email: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING,
           allowNull: false,
-          unique: true,
+          validate: {
+            isEmail: true
+          }
         },
-        age: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
+        phone: {
+          type: Sequelize.STRING,
+          allowNull: true
         },
-      },
-      {
-        sequelize,
-        timestamps: false,
-        underscored: false,
-        modelName: "User",
-        tableName: "users",
-        paranoid: false,
-        charset: "utf8",
-        collate: "utf8_general_ci",
-      }
+        is_admin: {
+          type: Sequelize.BOOLEAN,
+          defaultValue: false
+        },
+        regdate: {
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.NOW
+        },
+
+      }, {
+      sequelize, // Sequelize 인스턴스 전달
+      modelName: "Users",
+      tableName: "users",
+      timestamps: false,
+    }
     );
   }
 
   static associate(db) {
-    db.User.hasMany(db.Like, { foreignKey: "user_id", sourceKey: "id" });
-    db.User.hasMany(db.Rating, { foreignKey: "user_id", sourceKey: "id" });
-    db.User.hasMany(db.VenueLike, { foreignKey: "user_id", sourceKey: "id" });
+    db.Users.hasMany(db.Like, { foreignKey: "user_id", sourceKey: "id" });
+    db.Users.hasMany(db.Rating, { foreignKey: "user_id", sourceKey: "id" });
+    db.Users.hasMany(db.VenueLike, { foreignKey: "user_id", sourceKey: "id" });
   }
 }
 
-module.exports = User;
+module.exports = Users;

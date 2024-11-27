@@ -15,7 +15,7 @@ const sequelize = new Sequelize(
 
 db.sequelize = sequelize;
 
-const User = require("./user");
+const Users = require("./user");
 const Exhibition = require("./exhibition");
 const ExhibitionDetail = require("./exhibitionDetail");
 const Venue = require("./venue");
@@ -23,7 +23,7 @@ const Like = require("./like");
 const Rating = require("./rating");
 const VenueLike = require("./venueLike");
 
-db.User = User;
+db.Users = Users;
 db.Exhibition = Exhibition;
 db.ExhibitionDetail = ExhibitionDetail;
 db.Venue = Venue;
@@ -31,7 +31,7 @@ db.Like = Like;
 db.Rating = Rating;
 db.VenueLike = VenueLike;
 
-User.initiate(sequelize);
+Users.initiate(sequelize);
 Exhibition.initiate(sequelize);
 ExhibitionDetail.initiate(sequelize);
 Venue.initiate(sequelize);
@@ -39,7 +39,7 @@ Like.initiate(sequelize);
 Rating.initiate(sequelize);
 VenueLike.initiate(sequelize);
 
-User.associate(db);
+Users.associate(db);
 Exhibition.associate(db);
 ExhibitionDetail.associate(db);
 Venue.associate(db);

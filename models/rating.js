@@ -40,7 +40,7 @@ class Rating extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Rating.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
+    db.Rating.belongsTo(db.Users, { foreignKey: "user_id", targetKey: "id" });
     db.Rating.belongsTo(db.Exhibition, {
       foreignKey: "exhibition_id",
       targetKey: "id",

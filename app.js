@@ -35,9 +35,6 @@ app.use(
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
 const { swaggerUi, specs } = require("./swagger/swagger");
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
@@ -52,18 +49,6 @@ app.use("/", express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-    },
-    name: "session-cookie",
-  })
-);
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use("/api/admin/exhibitions", adminRouter);
 /**
@@ -97,14 +82,16 @@ app.use((req, res, next) => {
 app.use("/middlewares/register", registerRoutes); // 회원가입
 
 // Sequelize 연결
+
 sequelize
   .sync({ force: false })
   .then(() => {
-    console.log("데이터베이스 연결 성공");
+    console.log('데이터베이스 연결 성공');
   })
   .catch((err) => {
-    console.error(err);
+    console.error('데이터베이스 연결 실패:', err);
   });
+
 
 // 라우트 등록
 app.use("/login", loginRouter);
@@ -117,7 +104,7 @@ app.get("/", (req, res) => res.render("index"));
 app.get("/login", (req, res) => res.render("login"));
 app.get("/register", (req, res) => res.render("register"));
 app.get("/profile", (req, res) => {
-  if (!req.session.member) {
+  if (!req.session.user) {
     return res.send(
       '<script>alert("로그인 후 이용 가능"); location.href="/login";</script>'
     );

@@ -32,7 +32,7 @@ class Like extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Like.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
+    db.Like.belongsTo(db.Users, { foreignKey: "user_id", targetKey: "id" });
     db.Like.belongsTo(db.Exhibition, {
       foreignKey: "exhibition_id",
       targetKey: "id",

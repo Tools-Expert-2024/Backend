@@ -32,7 +32,7 @@ class VenueLike extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.VenueLike.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
+    db.VenueLike.belongsTo(db.Users, { foreignKey: "user_id", targetKey: "id" });
     db.VenueLike.belongsTo(db.Venue, {
       foreignKey: "venue_id",
       targetKey: "id",
