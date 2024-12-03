@@ -160,8 +160,23 @@ router.get("/:id", (req, res) => {
       seq: req.params.id,
     },
   })
-    .then((result) => {
-      res.json(result);
+    .then((exhibitionDetail) => {
+      if (!exhibitionDetail) {
+        return res.status(404).json({ message: "Exhibition not found" });
+      }
+      return sequelize.models.Venue.findOne({
+        where: {
+          place_seq: exhibitionDetail.place_seq,
+        },
+      }).then((venue) => {
+        if (!venue) {
+          return res.status(404).json({ message: "Venue not found" });
+        }
+        res.json({
+          exhibitionDetail,
+          venue,
+        });
+      });
     })
     .catch((error) => {
       console.error(error);
