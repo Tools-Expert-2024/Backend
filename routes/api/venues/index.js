@@ -1,5 +1,6 @@
 const express = require("express");
 const { sequelize } = require("../../../models");
+const { verifyToken } = require("../../../lib/authentication");
 
 // - `POST /api/venues/:id/like`: 전시장 좋아요
 // - `DELETE /api/venues/:id/like`: 전시장 좋아요 취소
@@ -38,11 +39,11 @@ const router = express.Router();
  *          description: "좋아요 추가 성공"
  */
 
-router.post("/:id/like", (req, res) => {
+router.post("/:id/like", verifyToken, (req, res) => {
   // 좋아요 처리 로직
   sequelize.models.VenueLike.create({
     venue_id: req.params.id,
-    user_id: req.body.userId,
+    user_id: req.userId,
   })
     .then((result) => {
       res.send("Like added");
@@ -84,12 +85,12 @@ router.post("/:id/like", (req, res) => {
  *          description: "좋아요 취소 성공"
  */
 
-router.delete("/:id/like", (req, res) => {
+router.delete("/:id/like", verifyToken, (req, res) => {
   // 좋아요 취소 처리 로직
   sequelize.models.VenueLike.destroy({
     where: {
       venue_id: req.params.id,
-      user_id: req.body.userId,
+      user_id: req.userId,
     },
   })
     .then((result) => {
@@ -154,15 +155,21 @@ router.delete("/:id/like", (req, res) => {
  *                      format: date
  *                      description: "전시회 종료 날짜"
  */
-
-router.get("/:id/exhibitions", (req, res) => {
-  // 전시 리스트 조회 로직
+router.get("/:id/exhibitions", verifyToken, (req, res) => {
+  // 좋아요 누른 전시장에서 진행 중인 전시 리스트 조회 로직
   sequelize.models.Exhibition.findAll({
+    include: [
+      {
+        model: sequelize.models.VenueLike,
+        where: {
+          venue_id: req.params.id,
+          user_id: req.userId,
+        },
+      },
+    ],
     where: {
-      venue_id: req.params.id,
-      user_id: req.body.userId,
-      startDate: { [sequelize.Sequelize.Op.lte]: req.body.startDate },
-      endDate: { [sequelize.Sequelize.Op.gte]: req.body.endDate },
+      startDate: { [sequelize.Sequelize.Op.lte]: req.query.startDate },
+      endDate: { [sequelize.Sequelize.Op.gte]: req.query.endDate },
     },
   })
     .then((result) => {
@@ -175,35 +182,56 @@ router.get("/:id/exhibitions", (req, res) => {
   res.send("Exhibition list");
 });
 
-// DELETE /api/venues/:id/exhibitions: 좋아요한 전시장에서 진행 중인 전시 리스트 중 취소
+// GET /api/venues/liked: 좋아요 누른 전시장 리스트
 /**
  * @swagger
  * paths:
- *  /api/venues/{id}/exhibitions:
- *    delete:
- *      summary: "좋아요한 전시장에서 진행 중인 전시 취소"
- *      description: "특정 전시장에서 현재 진행 중인 전시회를 취소합니다."
+ *  /api/venues/liked:
+ *    get:
+ *      summary: "좋아요 누른 전시장 리스트 조회"
+ *      description: "사용자가 좋아요를 누른 전시장의 목록을 조회합니다."
  *      tags: [Venues]
- *      parameters:
- *        - in: path
- *          name: id
- *          required: true
- *          schema:
- *            type: integer
- *          description: "전시장 ID"
- *        - in: query
- *          name: exhibitionId
- *          schema:
- *            type: integer
- *          description: "취소할 전시회 ID"
  *      responses:
  *        "200":
- *          description: "전시 취소 성공"
+ *          description: "좋아요 누른 전시장 리스트 조회 성공"
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  properties:
+ *                    id:
+ *                      type: integer
+ *                      description: "전시장 ID"
+ *                    name:
+ *                      type: string
+ *                      description: "전시장 이름"
+ *                    location:
+ *                      type: string
+ *                      description: "전시장 위치"
  */
-
-router.delete("/:id/exhibitions", (req, res) => {
-  // 전시 리스트 중 취소 처리 로직
-  res.send("Exhibition removed");
+router.get("/liked", verifyToken, (req, res) => {
+  // 좋아요 누른 전시장 리스트 조회 로직
+  sequelize.models.VenueLike.findAll({
+    where: {
+      user_id: req.userId,
+    },
+    include: [
+      {
+        model: sequelize.models.Venue,
+        attributes: ["id", "name", "location"],
+      },
+    ],
+  })
+    .then((result) => {
+      const likedVenues = result.map((like) => like.Venue);
+      res.json(likedVenues);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    });
 });
 
 module.exports = router;

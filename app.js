@@ -33,6 +33,8 @@ app.use(
 );
 
 const { swaggerUi, specs } = require("./swagger/swagger");
+const { authorize } = require("./lib/authorization");
+const { verifyToken } = require("./lib/authentication");
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
@@ -50,30 +52,30 @@ app.use(cors({ origin: "http://localhost:3000" }));
 
 // 라우트 등록
 app.use("/api/auth", authRouter);
-app.use("/api/admin/exhibitions", adminRouter);
+app.use("/api/admin/exhibitions", verifyToken, authorize, adminRouter);
 app.use("/api/exhibitions", exhibitionRouter);
 app.use("/api/venues", venueRouter);
-app.use((req, res, next) => {
-  res.locals.id = "";
-  res.locals.password = "";
-  res.locals.name = "";
-  res.locals.user_name = "";
-  res.locals.phone = "";
-  res.locals.email = "";
-  res.locals.is_admin = "0";
+// app.use((req, res, next) => {
+//   res.locals.id = "";
+//   res.locals.password = "";
+//   res.locals.name = "";
+//   res.locals.user_name = "";
+//   res.locals.phone = "";
+//   res.locals.email = "";
+//   res.locals.is_admin = "0";
 
-  if (req.session.user) {
-    res.locals.id = req.session.user.id;
-    res.locals.password = req.session.user.password;
-    res.locals.name = req.session.user.name;
-    res.locals.user_name = req.session.user.user_name;
-    res.locals.phone = req.session.user.phone;
-    res.locals.email = req.session.user.email;
-    res.locals.is_admin = req.session.user.is_admin;
-  }
-  next();
-});
-app.use("/middlewares/register", registerRoutes); // 회원가입
+//   if (req.session.user) {
+//     res.locals.id = req.session.user.id;
+//     res.locals.password = req.session.user.password;
+//     res.locals.name = req.session.user.name;
+//     res.locals.user_name = req.session.user.user_name;
+//     res.locals.phone = req.session.user.phone;
+//     res.locals.email = req.session.user.email;
+//     res.locals.is_admin = req.session.user.is_admin;
+//   }
+//   next();
+// });
+// app.use("/middlewares/register", registerRoutes); // 회원가입
 
 // Sequelize 연결
 

@@ -117,6 +117,9 @@
 const express = require("express");
 const router = express.Router();
 const { sequelize } = require("../../../models"); // User 모델 가져오기
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const jwtSecret = process.env.JWT_SECRET_KEY;
 
 const Users = sequelize.models.Users;
 // 로그인 처리
@@ -124,18 +127,18 @@ router.post("/login", async (req, res) => {
   const { id, password } = req.body;
 
   try {
-    // Sequelize를 사용해 사용자 찾기
+    // 해싱된 비밀번호 비교
     const user = await Users.findOne({
       where: {
         id: id,
-        password: password, // 단순한 비교를 위해 password를 사용했지만, 해싱 필요
       },
     });
 
-    if (user) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       // 세션에 사용자 정보 저장
-      req.session.user = user;
-      res.send("<script>alert('로그인 성공'); location.href='/';</script>");
+      //   req.session.user = user;
+      const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: "1h" });
+      res.json({ message: "로그인 성공", token: token });
     } else {
       res.send(
         "<script>alert('미등록 정보'); location.href='/login';</script>"
@@ -149,19 +152,23 @@ router.post("/login", async (req, res) => {
 
 // 로그아웃 처리
 router.get("/logout", (req, res) => {
-  req.session.destroy();
+  const token = req.headers.authorization.split(" ")[1];
+  jwt.destroy(token);
+  //   req.session.destroy();
   res.send("<script>alert('로그아웃'); location.href='/';</script>");
 });
 
 //회원가입
 router.post("/register", async (req, res) => {
   const { id, password, name, user_name, email, phone } = req.body;
-
+  // Sequelize를 사용해 사용자 찾기
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
   try {
     // User 모델을 사용해 데이터 삽입
     await Users.create({
       id: id,
-      password: password,
+      password: hashedPassword,
       name: name,
       user_name: user_name,
       email: email,

@@ -3,6 +3,7 @@ const { sequelize } = require("../../../models");
 const router = express.Router();
 const { Op } = require("sequelize");
 const { fetchAndSaveExhibitions } = require("../../../config/cron");
+const { verifyToken } = require("../../../lib/authentication");
 // - `GET /api/exhibitions`: 전시회 리스트
 // - `GET /api/exhibitions/search`: 전시회 검색
 // - `GET /api/exhibitions/:id`: 전시회 상세 정보
@@ -213,11 +214,11 @@ router.get("/:id", (req, res) => {
  *          description: "좋아요 추가 성공"
  */
 
-router.post("/:id/like", (req, res) => {
+router.post("/:id/like", verifyToken, (req, res) => {
   // 전시회 좋아요
   sequelize.models.Like.create({
     exhibition_id: req.params.id,
-    user_id: req.body.userId,
+    user_id: req.userId,
   })
     .then((result) => {
       res.send("Like added");
@@ -257,12 +258,12 @@ router.post("/:id/like", (req, res) => {
  *          description: "좋아요 취소 성공"
  */
 
-router.delete("/:id/like", (req, res) => {
+router.delete("/:id/like", verifyToken, (req, res) => {
   // 전시회 좋아요 취소
   sequelize.models.Like.destroy({
     where: {
       exhibition_id: req.params.id,
-      user_id: req.body.userId,
+      user_id: req.userId,
     },
   })
     .then((result) => {
@@ -310,11 +311,11 @@ router.delete("/:id/like", (req, res) => {
  *          description: "별점 및 댓글 작성 성공"
  */
 
-router.post("/:id/rate", (req, res) => {
+router.post("/:id/rate", verifyToken, (req, res) => {
   // 전시회 별점 및 댓글 작성
   sequelize.models.ExhibitionRating.create({
     exhibition_id: req.params.id,
-    user_id: req.body.userId,
+    user_id: req.userId,
     rating: req.body.rating,
     comment: req.body.comment,
   })
@@ -363,10 +364,10 @@ router.post("/:id/rate", (req, res) => {
  *          description: "별점 및 댓글 수정 성공"
  */
 
-router.put("/:id/rate", (req, res) => {
+router.put("/:id/rate", verifyToken, (req, res) => {
   // 전시회 댓글 수정
   sequelize.models.Rating.update(req.body, {
-    where: { exhibition_id: req.params.id, user_id: req.body.userId },
+    where: { exhibition_id: req.params.id, user_id: req.userId },
   })
     .then((result) => {
       res.send("Rating updated");
