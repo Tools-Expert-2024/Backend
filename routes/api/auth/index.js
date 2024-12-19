@@ -133,7 +133,7 @@ router.post("/login", async (req, res) => {
         id: id,
       },
     });
-
+    const saltRounds = 10;
     if (user && (await bcrypt.compare(password, user.password))) {
       // 세션에 사용자 정보 저장
       //   req.session.user = user;
@@ -161,6 +161,17 @@ router.get("/logout", (req, res) => {
 //회원가입
 router.post("/register", async (req, res) => {
   const { id, password, name, user_name, email, phone } = req.body;
+  const existingUser = await Users.findOne({
+    where: {
+      [sequelize.Op.or]: [{ id: id }, { email: email }, { phone: phone }],
+    },
+  });
+
+  if (existingUser) {
+    return res.send(
+      '<script>alert("이미 사용 중인 아이디, 이메일 또는 휴대전화입니다."); location.href="/register";</script>'
+    );
+  }
   // Sequelize를 사용해 사용자 찾기
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
