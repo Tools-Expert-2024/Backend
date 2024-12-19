@@ -21,6 +21,7 @@ const options = {
     "./routes/api/exhibitions/*.js",
     "./routes/api/admin/*.js",
     "./routes/api/venues/*.js",
+    "./routes/api/auth/*.js",
   ], //Swagger 파일 연동
 };
 const specs = swaggereJsdoc(options);

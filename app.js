@@ -11,12 +11,9 @@ dotenv.config();
 const registerRoutes = require("./middlewares/register");
 const adminRouter = require("./routes/api/admin/exhibitions");
 const exhibitionRouter = require("./routes/api/exhibitions");
+const authRouter = require("./routes/api/auth");
 const venueRouter = require("./routes/api/venues");
 const { sequelize } = require("./models");
-const loginRouter = require("./middlewares/login");
-const logoutRourter = require("./middlewares/logout");
-const findRouter = require("./middlewares/find_my_id");
-const registerRouter = require("./middlewares/register");
 const { fetchAndSaveExhibitions } = require("./config/cron");
 
 const app = express();
@@ -50,13 +47,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors({ origin: "http://localhost:3000" }));
+
+// 라우트 등록
+app.use("/api/auth", authRouter);
 app.use("/api/admin/exhibitions", adminRouter);
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: 유저 추가 수정 삭제 조회
- */
 app.use("/api/exhibitions", exhibitionRouter);
 app.use("/api/venues", venueRouter);
 app.use((req, res, next) => {
@@ -86,18 +80,11 @@ app.use("/middlewares/register", registerRoutes); // 회원가입
 sequelize
   .sync({ force: false })
   .then(() => {
-    console.log('데이터베이스 연결 성공');
+    console.log("데이터베이스 연결 성공");
   })
   .catch((err) => {
-    console.error('데이터베이스 연결 실패:', err);
+    console.error("데이터베이스 연결 실패:", err);
   });
-
-
-// 라우트 등록
-app.use("/login", loginRouter);
-app.use("/logout", logoutRourter); // 로그인/로그아웃
-app.use("/register", registerRouter);
-app.use("/find_my_id", findRouter);
 
 // 페이지 라우트
 app.get("/", (req, res) => res.render("index"));
