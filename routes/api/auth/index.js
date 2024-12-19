@@ -171,9 +171,11 @@ router.post("/register", async (req, res) => {
     });
 
     if (existingUser) {
-      return res.send(
-        '<script>alert("이미 사용 중인 아이디, 이메일 또는 휴대전화입니다."); location.href="/register";</script>'
-      );
+      return res
+        .status(400)
+        .send(
+          '<script>alert("이미 사용 중인 아이디, 이메일 또는 휴대전화입니다."); location.href="/register";</script>'
+        );
     }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -187,9 +189,11 @@ router.post("/register", async (req, res) => {
       phone: phone,
     });
 
-    res.send(
-      '<script>alert("회원가입이 완료되었습니다."); location.href="/login";</script>'
-    );
+    res
+      .status(201)
+      .send(
+        '<script>alert("회원가입이 완료되었습니다."); location.href="/login";</script>'
+      );
   } catch (err) {
     console.error("회원가입 오류:", err);
     res.status(500).send("Internal Server Error");
