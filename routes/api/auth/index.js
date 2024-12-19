@@ -117,6 +117,7 @@
 const express = require("express");
 const router = express.Router();
 const { sequelize } = require("../../../models"); // User 모델 가져오기
+const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const jwtSecret = process.env.JWT_SECRET_KEY;
@@ -161,21 +162,21 @@ router.get("/logout", (req, res) => {
 //회원가입
 router.post("/register", async (req, res) => {
   const { id, password, name, user_name, email, phone } = req.body;
-  const existingUser = await Users.findOne({
-    where: {
-      [sequelize.Op.or]: [{ id: id }, { email: email }, { phone: phone }],
-    },
-  });
-
-  if (existingUser) {
-    return res.send(
-      '<script>alert("이미 사용 중인 아이디, 이메일 또는 휴대전화입니다."); location.href="/register";</script>'
-    );
-  }
-  // Sequelize를 사용해 사용자 찾기
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
   try {
+    // Sequelize를 사용해 사용자 찾기
+    const existingUser = await Users.findOne({
+      where: {
+        [Op.or]: [{ id: id }, { email: email }, { phone: phone }],
+      },
+    });
+
+    if (existingUser) {
+      return res.send(
+        '<script>alert("이미 사용 중인 아이디, 이메일 또는 휴대전화입니다."); location.href="/register";</script>'
+      );
+    }
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     // User 모델을 사용해 데이터 삽입
     await Users.create({
       id: id,
