@@ -167,8 +167,8 @@ router.get("/:id/exhibitions", (req, res) => {
       },
     ],
     where: {
-      startDate: { [sequelize.Sequelize.Op.lte]: req.query.startDate },
-      endDate: { [sequelize.Sequelize.Op.gte]: req.query.endDate },
+      startDate: { [sequelize.Sequelize.Op.gte]: req.query.startDate },
+      endDate: { [sequelize.Sequelize.Op.lte]: req.query.endDate },
     },
   })
     .then((result) => {
