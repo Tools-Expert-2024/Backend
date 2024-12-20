@@ -157,16 +157,15 @@ router.delete("/:id/like", verifyToken, (req, res) => {
  */
 router.get("/:id/exhibitions", (req, res) => {
   // 좋아요 누른 전시장에서 진행 중인 전시 리스트 조회 로직
-  sequelize.models.Exhibition.findAll({
-    // include: [
-    //   {
-    //     model: sequelize.models.VenueLike,
-    //     where: {
-    //       venue_id: req.params.id,
-    //       user_id: req.userId,
-    //     },
-    //   },
-    // ],
+  sequelize.models.ExhibitionDetail.findAll({
+    include: [
+      {
+        model: sequelize.models.Venue,
+        where: {
+          id: req.params.id,
+        },
+      },
+    ],
     where: {
       startDate: { [sequelize.Sequelize.Op.lte]: req.query.startDate },
       endDate: { [sequelize.Sequelize.Op.gte]: req.query.endDate },
@@ -179,7 +178,7 @@ router.get("/:id/exhibitions", (req, res) => {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
     });
-  res.send("Exhibition list");
+  // res.send("Exhibition list");
 });
 
 // GET /api/venues/liked: 좋아요 누른 전시장 리스트
