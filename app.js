@@ -54,13 +54,7 @@ const allowedOrigins = [
 ];
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // 허용
-      } else {
-        callback(new Error("Not allowed by CORS")); // 차단
-      }
-    },
+    origin: "*",
   })
 );
 
