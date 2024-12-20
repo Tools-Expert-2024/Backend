@@ -48,7 +48,14 @@ app.use("/", express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://tools-experts2024-front.vercel.app/",
+    ],
+  })
+);
 
 // 라우트 등록
 app.use("/api/auth", authRouter);
