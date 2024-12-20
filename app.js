@@ -52,7 +52,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://tools-experts2024-front.vercel.app/",
+      "https://tools-experts2024-front.vercel.app",
     ],
   })
 );
