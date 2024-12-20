@@ -211,21 +211,14 @@ router.get("/:id/exhibitions", verifyToken, (req, res) => {
  *                      type: string
  *                      description: "전시장 위치"
  */
-router.get("/liked", verifyToken, (req, res) => {
+router.get("/liked", (req, res) => {
   // 좋아요 누른 전시장 리스트 조회 로직
-  sequelize.models.VenueLike.findAll({
-    where: {
-      user_id: req.userId,
-    },
-    include: [
-      {
-        model: sequelize.models.Venue,
-        attributes: ["id", "name", "location"],
-      },
-    ],
+  sequelize.models.Venue.findAll({
+    attributes: ["id", "name", "place_url", "place_seq"],
+    limit: 8,
   })
     .then((result) => {
-      const likedVenues = result.map((like) => like.Venue);
+      const likedVenues = result.map((like) => like.toJSON());
       res.json(likedVenues);
     })
     .catch((error) => {
