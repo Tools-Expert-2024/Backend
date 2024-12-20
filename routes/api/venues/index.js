@@ -155,18 +155,18 @@ router.delete("/:id/like", verifyToken, (req, res) => {
  *                      format: date
  *                      description: "전시회 종료 날짜"
  */
-router.get("/:id/exhibitions", verifyToken, (req, res) => {
+router.get("/:id/exhibitions", (req, res) => {
   // 좋아요 누른 전시장에서 진행 중인 전시 리스트 조회 로직
   sequelize.models.Exhibition.findAll({
-    include: [
-      {
-        model: sequelize.models.VenueLike,
-        where: {
-          venue_id: req.params.id,
-          user_id: req.userId,
-        },
-      },
-    ],
+    // include: [
+    //   {
+    //     model: sequelize.models.VenueLike,
+    //     where: {
+    //       venue_id: req.params.id,
+    //       user_id: req.userId,
+    //     },
+    //   },
+    // ],
     where: {
       startDate: { [sequelize.Sequelize.Op.lte]: req.query.startDate },
       endDate: { [sequelize.Sequelize.Op.gte]: req.query.endDate },
