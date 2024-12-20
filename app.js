@@ -48,12 +48,19 @@ app.use("/", express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://tools-experts2024-front.vercel.app",
+];
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://tools-experts2024-front.vercel.app",
-    ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // 허용
+      } else {
+        callback(new Error("Not allowed by CORS")); // 차단
+      }
+    },
   })
 );
 
